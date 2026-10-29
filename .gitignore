@@ -1,0 +1,9 @@
+bin/
+obj/
+.packages/
+.dotnet/
+dist/
+Data/
+artifacts/
+tests/bin/
+tests/obj/

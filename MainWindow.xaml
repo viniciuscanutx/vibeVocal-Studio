@@ -1,0 +1,175 @@
+<Window x:Class="VibeVocalStudio.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="clr-namespace:VibeVocalStudio.Views"
+        Title="vibeVocal Studio" Width="1180" Height="1000" MinWidth="980" MinHeight="680"
+        Background="#EDF1F5" FontFamily="Segoe UI Variable, Segoe UI" FontSize="13"
+        WindowStartupLocation="CenterScreen" UseLayoutRounding="True">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Background="#EDF1F5">
+        <Grid Margin="28,24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <DockPanel Margin="0,0,0,22">
+                <StackPanel DockPanel.Dock="Right" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Status}" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                    <TextBlock Text="{Binding Format}" Style="{StaticResource Hint}" HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock Text="vibeVocal Studio" FontSize="32" FontWeight="SemiBold"/>
+                    <TextBlock Text="Sua voz, no ponto." Foreground="#53657A" FontSize="14" Margin="0,3,0,0"/>
+                </StackPanel>
+            </DockPanel>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="310"/><ColumnDefinition Width="16"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                <Border Style="{StaticResource Panel}">
+                    <StackPanel>
+                        <TextBlock Text="Conexões" Style="{StaticResource SectionTitle}"/>
+                        <Label Content="_Entrada do microfone" Target="{Binding ElementName=InputDevices}" Padding="0,0,0,7"/>
+                        <ComboBox x:Name="InputDevices" ItemsSource="{Binding Inputs}" SelectedItem="{Binding SelectedInput}" DisplayMemberPath="Name"
+                                  IsEnabled="{Binding CanSelectDevices}" AutomationProperties.Name="Entrada do microfone" ToolTip="{Binding SelectedInput.Name}"/>
+                        <Label Content="_Saída para o cabo virtual" Target="{Binding ElementName=OutputDevices}" Padding="0,16,0,7"/>
+                        <ComboBox x:Name="OutputDevices" ItemsSource="{Binding Outputs}" SelectedItem="{Binding SelectedOutput}" DisplayMemberPath="Name"
+                                  IsEnabled="{Binding CanSelectDevices}" AutomationProperties.Name="Saída para o cabo virtual" ToolTip="{Binding SelectedOutput.Name}"/>
+                        <TextBlock Text="No Discord ou jogo, escolha CABLE Output como microfone." Style="{StaticResource Hint}" Margin="0,12,0,12"/>
+                        <Button Content="Atualizar dispositivos" Command="{Binding RefreshCommand}" Padding="10,7"/>
+                        <Separator Margin="0,19,0,14" Background="#E3E8F0"/>
+                        <Label Content="_Buffer de áudio" Target="{Binding ElementName=BufferSelector}" Padding="0,0,0,7"/>
+                        <ComboBox x:Name="BufferSelector" ItemsSource="{Binding Buffers}" SelectedItem="{Binding SelectedBuffer}" DisplayMemberPath="Name"
+                                  IsEnabled="{Binding CanSelectDevices}" AutomationProperties.Name="Buffer de áudio"/>
+                        <TextBlock Text="Se houver estalos, pare o áudio e aumente o buffer." Style="{StaticResource Hint}" Margin="0,10,0,0"/>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="2" Style="{StaticResource Panel}">
+                    <StackPanel>
+                        <DockPanel>
+                            <Button Content="{Binding StartStopText}" Command="{Binding StartStopCommand}" DockPanel.Dock="Right" Background="#2764D8" Foreground="White" MinWidth="110" AutomationProperties.Name="Iniciar ou parar processamento"/>
+                            <StackPanel><TextBlock Text="Controle de voz" Style="{StaticResource SectionTitle}" Margin="0,0,0,3"/><TextBlock Text="Ajustes em tempo real" Style="{StaticResource Hint}"/></StackPanel>
+                        </DockPanel>
+                        <Grid Margin="0,19,0,15">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="28"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Ganho de entrada" FontWeight="SemiBold"/>
+                                <TextBlock FontSize="40" FontWeight="Light" Margin="0,0,0,2"><Run Text="{Binding InputGainDb, StringFormat={}{0:+0.0;-0.0;0.0}}"/><Run Text=" dB" FontSize="19" Foreground="#53657A"/></TextBlock>
+                                <Slider Minimum="-24" Maximum="24" TickFrequency="0.5" SmallChange="0.5" LargeChange="3" Value="{Binding InputGainDb}" AutomationProperties.Name="Ganho digital de entrada em decibéis"/>
+                                <TextBlock Text="Amplifica o sinal recebido do microfone." Style="{StaticResource Hint}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Ganho de saída" FontWeight="SemiBold"/>
+                                <TextBlock FontSize="40" FontWeight="Light" Margin="0,0,0,2"><Run Text="{Binding OutputGainDb, StringFormat={}{0:+0.0;-0.0;0.0}}"/><Run Text=" dB" FontSize="19" Foreground="#53657A"/></TextBlock>
+                                <Slider Minimum="-24" Maximum="12" TickFrequency="0.5" SmallChange="0.5" LargeChange="3" Value="{Binding OutputGainDb}" AutomationProperties.Name="Ganho digital de saída em decibéis"/>
+                                <TextBlock Text="Ajusta o nível após o tratamento." Style="{StaticResource Hint}"/>
+                            </StackPanel>
+                        </Grid>
+                        <DockPanel Margin="0,0,0,7"><TextBlock Text="{Binding InputLevel}" DockPanel.Dock="Right" HorizontalAlignment="Right"/><TextBlock Text="Entrada original" Foreground="#53657A"/></DockPanel>
+                        <views:LevelMeter Level="{Binding InputMeter}" Height="14" AutomationProperties.Name="Medidor de entrada original"/>
+                        <DockPanel Margin="0,13,0,7"><TextBlock Text="{Binding OutputLevel}" DockPanel.Dock="Right" HorizontalAlignment="Right"/><TextBlock Text="Saída tratada" Foreground="#53657A"/></DockPanel>
+                        <views:LevelMeter Level="{Binding OutputMeter}" Height="14" AutomationProperties.Name="Medidor de saída tratada"/>
+                        <Grid Margin="0,5,0,12"><TextBlock Text="−60" Style="{StaticResource Hint}"/><TextBlock Text="−30" HorizontalAlignment="Center" Style="{StaticResource Hint}"/><TextBlock Text="0 dBFS" HorizontalAlignment="Right" Style="{StaticResource Hint}"/></Grid>
+                        <DockPanel>
+                            <CheckBox Content="Comparar original" IsChecked="{Binding Bypass}" DockPanel.Dock="Right" ToolTip="Ignora supressão de ruído, ganhos, equalização, gate e compressor. O limitador de proteção permanece ativo."/>
+                            <CheckBox Content="{Binding MuteText}" IsChecked="{Binding Muted}" FontWeight="SemiBold" AutomationProperties.Name="Silenciar saída"/>
+                        </DockPanel>
+                        <TextBlock Text="{Binding SignalStatus}" Foreground="#53657A" FontSize="12" Margin="0,6,0,0"/>
+                        <Border BorderBrush="#E3E8F0" BorderThickness="0,1,0,0" Margin="0,16,0,0" Padding="0,12,0,0">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                    <CheckBox Content="Ouvir meu microfone" IsChecked="{Binding MonitorEnabled}" IsEnabled="{Binding HasMonitorDevice}"
+                                              FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,16,0" AutomationProperties.Name="Ouvir meu microfone"/>
+                                    <ComboBox Grid.Column="1" ItemsSource="{Binding MonitorOutputs}" SelectedItem="{Binding SelectedMonitor}" DisplayMemberPath="Name"
+                                              IsEnabled="{Binding CanSelectMonitor}" AutomationProperties.Name="Fone ou alto-falante para ouvir o microfone"
+                                              ToolTip="{Binding SelectedMonitor.Name}"/>
+                                </Grid>
+                                <TextBlock Text="{Binding MonitorStatus}" Style="{StaticResource Hint}" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </Grid>
+            <Grid Grid.Row="2" Margin="0,16,0,0">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="16"/><ColumnDefinition Width="*"/><ColumnDefinition Width="16"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                <Border Style="{StaticResource Panel}">
+                    <StackPanel>
+                        <TextBlock Text="Equalização" Style="{StaticResource SectionTitle}"/>
+                        <views:ParameterSlider Label="Graves" Value="{Binding BassDb}" Description="Corpo da voz, em torno de 160 Hz."/>
+                        <views:ParameterSlider Label="Presença" Value="{Binding PresenceDb}" Description="Clareza e articulação da voz, em torno de 3 kHz."/>
+                        <views:ParameterSlider Label="Agudos" Value="{Binding TrebleDb}" Description="Brilho da voz, a partir de 8 kHz."/>
+                        <CheckBox Content="Cortar graves abaixo de 80 Hz" IsChecked="{Binding HighPassEnabled}" FontSize="12"/>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="2" Style="{StaticResource Panel}">
+                    <StackPanel>
+                        <TextBlock Text="Redução de ruído" Style="{StaticResource SectionTitle}"/>
+                        <CheckBox IsChecked="{Binding NoiseSuppressionEnabled}" Margin="0,0,0,7"
+                                  AutomationProperties.Name="Suprimir ruído durante a fala">
+                            <TextBlock Text="Suprimir ruído durante a fala" TextWrapping="Wrap"/>
+                        </CheckBox>
+                        <TextBlock Text="Reduz ventilador e chiado mesmo enquanto você fala. Funciona localmente, sem internet." Style="{StaticResource Hint}"/>
+                        <TextBlock Text="Use o retorno e alterne esta opção para comparar." Style="{StaticResource Hint}" Margin="0,7,0,0"/>
+                        <Separator Margin="0,16,0,14" Background="#E3E8F0"/>
+                        <TextBlock Text="Silêncio nas pausas" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                        <CheckBox Content="Ativar gate" IsChecked="{Binding GateEnabled}" Margin="0,0,0,14"/>
+                        <views:ParameterSlider Label="Limiar de abertura" Value="{Binding GateThresholdDb}" Minimum="-72" Maximum="-20" Step="1" IsEnabled="{Binding GateEnabled}"
+                                               Description="Sinais abaixo deste nível são silenciados entre as falas."/>
+                        <TextBlock Text="Aumente até o ruído desaparecer nas pausas. Se cortar palavras, diminua o limiar." Style="{StaticResource Hint}" Margin="0,7,0,0"/>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="4" Style="{StaticResource Panel}">
+                    <StackPanel>
+                        <TextBlock Text="Dinâmica" Style="{StaticResource SectionTitle}"/>
+                        <CheckBox Content="Ativar compressor" IsChecked="{Binding CompressorEnabled}" Margin="0,0,0,10"/>
+                        <views:ParameterSlider Label="Limiar" Value="{Binding CompressorThresholdDb}" Minimum="-36" Maximum="-6" Step="1" IsEnabled="{Binding CompressorEnabled}" Description="Nível a partir do qual o compressor reduz os picos."/>
+                        <views:ParameterSlider Label="Proporção" Value="{Binding CompressorRatio}" Minimum="1" Maximum="8" Step="0.5" Unit=":1" IsEnabled="{Binding CompressorEnabled}" Description="Quanto maior a proporção, mais uniforme fica o volume."/>
+                        <DockPanel Margin="0,3,0,4"><TextBlock Text="{Binding Reduction}" DockPanel.Dock="Right" HorizontalAlignment="Right" FontWeight="SemiBold"/><TextBlock Text="Redução de picos" Style="{StaticResource Hint}"/></DockPanel>
+                        <TextBlock Text="Limitador sempre ativo: −1 dBFS." Style="{StaticResource Hint}"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+            <Grid Grid.Row="3" Margin="0,16,0,0">
+                <Border Style="{StaticResource Panel}" Padding="20,16">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,7"><TextBlock Text="{Binding ProcessingTime}" DockPanel.Dock="Right" HorizontalAlignment="Right" FontWeight="SemiBold"/><TextBlock Text="Processamento por bloco" Style="{StaticResource Hint}"/></DockPanel>
+                        <DockPanel><TextBlock Text="{Binding QueuedAudio}" DockPanel.Dock="Right" HorizontalAlignment="Right" FontWeight="SemiBold"/><TextBlock Text="Áudio na fila" Style="{StaticResource Hint}"/></DockPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+            <Border Grid.Row="4" Style="{StaticResource Panel}" Margin="0,16,0,0" Padding="20,16">
+                <StackPanel>
+                    <TextBlock Text="Perfil de voz" Style="{StaticResource SectionTitle}"/>
+                    <TextBlock Text="Guarde seus ganhos, equalização, redução de ruído e dinâmica. O salvamento automático continua mantendo seus últimos ajustes ao reabrir." Style="{StaticResource Hint}" Margin="0,0,0,12"/>
+                    <WrapPanel>
+                        <Button Content="Salvar perfil" Command="{Binding SaveProfileCommand}" Background="#2764D8" Foreground="White" Padding="14,8" Margin="0,0,10,0" AutomationProperties.Name="Salvar perfil de voz"/>
+                        <Button Content="Reaplicar perfil" Command="{Binding ApplyProfileCommand}" Padding="14,8" AutomationProperties.Name="Reaplicar perfil de voz"/>
+                    </WrapPanel>
+                    <TextBlock Text="{Binding ProfileStatus}" Style="{StaticResource Hint}" Margin="0,8,0,0" AutomationProperties.LiveSetting="Polite"/>
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="5" Style="{StaticResource Panel}" Margin="0,16,0,0" Padding="20,16">
+                <StackPanel>
+                    <TextBlock Text="Inicialização e bandeja" Style="{StaticResource SectionTitle}"/>
+                    <WrapPanel>
+                        <CheckBox Content="Abrir com o Windows" IsChecked="{Binding StartWithWindows}" Margin="0,0,24,0" AutomationProperties.Name="Abrir com o Windows"/>
+                        <CheckBox Content="Iniciar áudio automaticamente" IsChecked="{Binding AutoStartAudio}" Margin="0,0,24,0" AutomationProperties.Name="Iniciar áudio automaticamente"/>
+                        <CheckBox Content="Abrir direto na bandeja" IsChecked="{Binding StartInTray}" AutomationProperties.Name="Abrir direto na bandeja"/>
+                    </WrapPanel>
+                    <TextBlock Text="{Binding StartupStatus}" Style="{StaticResource Hint}" Margin="0,8,0,0"/>
+                </StackPanel>
+            </Border>
+            <Grid Grid.Row="6" Margin="0,16,0,0">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                <StackPanel VerticalAlignment="Center" Margin="0,0,20,0">
+                    <TextBlock Text="{Binding Detail}" Style="{StaticResource Hint}"/>
+                    <TextBlock Text="{Binding SavedStatus}" Style="{StaticResource Hint}" FontSize="11" Margin="0,4,0,0"/>
+                </StackPanel>
+                <Button Grid.Column="1" Content="Restaurar ajustes de voz" Command="{Binding ResetCommand}" Padding="14,8"/>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</Window>

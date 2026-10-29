@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>vibeVocal Studio</AssemblyName>
+    <RootNamespace>VibeVocalStudio</RootNamespace>
+    <Version>1.0.0</Version>
+    <PlatformTarget>x64</PlatformTarget>
+    <ApplicationIcon>Assets/Microphone.ico</ApplicationIcon>
+    <RestorePackagesPath>$(MSBuildProjectDirectory)/.packages</RestorePackagesPath>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+    <EmbeddedResource Include="Assets/Microphone.ico" />
+    <PackageReference Include="NAudio.Wasapi" Version="2.4.0" />
+    <Content Include="Native/rnnoise.dll" Link="rnnoise.dll" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="Native/RNNoise-NOTICES.txt" Link="RNNoise-NOTICES.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Compile Remove="tests/**/*.cs" />
+  </ItemGroup>
+</Project>
