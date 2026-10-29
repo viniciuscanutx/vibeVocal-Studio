@@ -20,20 +20,22 @@
 - **Bandeja do Windows**: abre com o Windows, inicia o áudio sozinho e fica rodando com a janela fechada.
 - **Privacidade**: nada é gravado em arquivo e nada é enviado pela rede.
 
-## Requisitos
+## Instalação
 
-- Windows 10 ou 11, x64.
-- [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) para rodar ou .NET 10 SDK para compilar.
-- [VB-CABLE](https://vb-audio.com/Cable/) instalado. Reinicie o Windows depois de instalar, se for pedido.
+1. Baixe o `vibeVocal-Studio-Setup-x.y.z.exe` em [Releases](https://github.com/viniciuscanutx/vibeVocal-Studio/releases/latest) e execute. Não precisa de administrador nem do .NET instalado: o runtime já vem junto.
+2. Instale o [VB-CABLE](https://vb-audio.com/Cable/) e reinicie o Windows. O instalador verifica se ele já existe e, se faltar, abre o site oficial no final.
+
+> O VB-CABLE é um donationware da VB-Audio e não vem dentro do instalador: a licença dele não permite embuti-lo na instalação de outro software.
+
+Requisitos: Windows 10 ou 11, x64.
 
 ## Começando
 
-1. Compile com `./Build.ps1`. O executável vai para `dist\`.
-2. Abra `dist\vibeVocal Studio.exe` ou `Abrir vibeVocal Studio.cmd`.
-3. Em **Entrada do microfone**, escolha o seu microfone. Se nenhum estiver salvo, o app usa o microfone padrão do Windows.
-4. Em **Saída para o cabo virtual**, escolha **CABLE Input (VB-Audio Virtual Cable)**. Evite a variante de 16 canais para uso comum.
-5. Clique em **Iniciar**.
-6. No Discord, jogo, OBS ou app de chamada, escolha **CABLE Output (VB-Audio Virtual Cable)** como microfone.
+1. Abra o **vibeVocal Studio** pelo menu Iniciar ou pelo atalho da área de trabalho.
+2. Em **Entrada do microfone**, escolha o seu microfone. Se nenhum estiver salvo, o app usa o microfone padrão do Windows.
+3. Em **Saída para o cabo virtual**, escolha **CABLE Input (VB-Audio Virtual Cable)**. Evite a variante de 16 canais para uso comum.
+4. Clique em **Iniciar**.
+5. No Discord, jogo, OBS ou app de chamada, escolha **CABLE Output (VB-Audio Virtual Cable)** como microfone.
 
 Pode minimizar ou fechar a janela: o áudio continua funcionando pela bandeja, perto do relógio.
 
@@ -122,7 +124,17 @@ tests/       verificações de DSP, interface e hardware
 ./Build.ps1
 ```
 
-Publica em `dist\` (framework-dependent, x64). Mantenha `rnnoise.dll` junto do executável ao distribuir. A origem e a forma de recompilar o RNNoise estão em [`Native/README.md`](Native/README.md).
+Publica em `dist\` (framework-dependent, x64, precisa do [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0)). Mantenha `rnnoise.dll` junto do executável ao distribuir. A origem e a forma de recompilar o RNNoise estão em [`Native/README.md`](Native/README.md).
+
+### Instalador
+
+```powershell
+./Build-Installer.ps1 -Version 1.0.0
+```
+
+Publica self-contained (win-x64) e gera `artifacts\installer\vibeVocal-Studio-Setup-1.0.0.exe` com o [Inno Setup 6](https://jrsoftware.org/isinfo.php) (`winget install JRSoftware.InnoSetup`). O script fica em [`installer/vibeVocal-Studio.iss`](installer/vibeVocal-Studio.iss).
+
+Para publicar uma versão, crie e envie uma tag `v*` (ex.: `git tag v1.0.1 && git push origin v1.0.1`). O workflow [`release.yml`](.github/workflows/release.yml) gera o instalador e anexa ao release no GitHub.
 
 ### Testes
 

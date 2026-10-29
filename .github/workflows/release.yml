@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  installer:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Instalar Inno Setup se faltar
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) { choco install innosetup -y --no-progress }
+
+      - name: Gerar instalador
+        shell: pwsh
+        run: |
+          $version = '${{ github.ref_name }}'.TrimStart('v')
+          ./Build-Installer.ps1 -Version $version
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: vibeVocal Studio ${{ github.ref_name }}
+          files: artifacts/installer/*.exe
+          body: |
+            Instalador do vibeVocal Studio para Windows 10/11 x64. Já inclui o .NET, não precisa instalar nada além do VB-CABLE.
+
+            **Antes de usar:** instale o [VB-CABLE](https://vb-audio.com/Cable/) (donationware da VB-Audio) e reinicie o Windows. Se ele não estiver no PC, o instalador avisa e abre o site oficial no final.
