@@ -6,7 +6,7 @@ $env:DOTNET_GENERATE_ASPNET_CERTIFICATE = 'false'
 $output = Join-Path $PSScriptRoot 'artifacts\installer'
 $publish = Join-Path $output 'app'
 if (Test-Path $publish) { Remove-Item -LiteralPath $publish -Recurse -Force }
-dotnet publish (Join-Path $PSScriptRoot 'VibeVocalStudio.csproj') -c Release -r win-x64 --self-contained true -o $publish -p:Version=$Version -p:RestorePackagesWithLockFile=false
+dotnet publish (Join-Path $PSScriptRoot 'VibeVocalStudio.csproj') -c Release -r win-x64 --self-contained true -o $publish -p:Version=$Version
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 $iscc = @(
     (Get-Command iscc -ErrorAction SilentlyContinue).Source,
